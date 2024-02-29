@@ -2,8 +2,10 @@
   "name": "nodejs-websocket-battleship-server",
   "version": "1.0.0",
   "description": "RSSchool websocket-battleship-server task",
-  "main": "index.js",
+  "main": "main.ts",
   "scripts": {
+    "start": "echo \"Error: no start specified\" && exit 1",
+    "start:dev": "nodemon --exec tsx src/backend/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Artem Karelin",
@@ -13,12 +15,16 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.20",
-    "nodemon": "^3.1.0",
+    "typescript": "^5.3.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
+    
+    "@types/node": "^20.11.22",
+    "@types/ws": "^8.5.10",
+    
+    "nodemon": "^3.1.0",
+    
     "webpack": "^5.90.3"
   }
 }
