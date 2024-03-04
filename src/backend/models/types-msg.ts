@@ -1,4 +1,14 @@
-type playerT = number | string;
+type playerT = number | string | undefined;
+
+export interface playerI {
+  name: string | undefined;
+  index: number | string | undefined;
+}
+
+export interface roomMsgI {
+  roomId: number | string;
+  roomUsers: Array<playerI>
+}
 
 //
 //  <---  IN
@@ -63,17 +73,7 @@ export interface create_game_ResI {
   idGame: number | string;
   idPlayer: playerT;
 }
-export type update_room_ResT = [
-  {
-    roomId: number | string;
-    roomUsers: [
-      {
-        name: string;
-        index: number | string;
-      }
-    ];
-  }
-];
+export type update_room_ResT = Array<roomMsgI>;
 export interface start_game_ResI {
   ships: /* player's ships, not enemy's */
   [

@@ -2,7 +2,7 @@ import { createReadStream } from "fs";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { dbI } from "./types-users-db";
+import { dbI } from "../models/types-users-db";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
