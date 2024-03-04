@@ -1,7 +1,8 @@
 export type userT = {
     username: string,
     password: string,
-    id: number
+    id: number,
+    wins: number
 }
 
 export interface dbI {

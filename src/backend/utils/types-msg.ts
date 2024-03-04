@@ -54,10 +54,11 @@ export interface reg_ResI {
   error: boolean;
   errorText: string;
 }
-export interface update_winners_ResI {
+interface winnersI  {
   name: string;
   wins: number;
 }
+export type update_winners_ResT = Array<winnersI>
 export interface create_game_ResI {
   idGame: number | string;
   idPlayer: playerT;

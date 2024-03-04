@@ -1,6 +1,6 @@
 import { httpServer } from "./http-server";
 import { WebSocketServer, WebSocket } from "ws";
-import { handler } from "./handler";
+import { handler, updateWinners } from "./handler";
 import { readDb } from "./utils/db-functions";
 import { dbI } from "./utils/types-users-db";
 
@@ -20,7 +20,7 @@ readDb()
 
 // Start HTTP server
 httpServer.listen(PORT);
-console.log(" --- HTTP Server started !");
+console.log(` --- HTTP Server started on ${PORT}`);
 
   
 // Start WebSocketServer
