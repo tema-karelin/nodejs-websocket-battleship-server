@@ -1,8 +1,8 @@
-type playerT = number | string | undefined;
+type playerT = number | string;
 
 export interface playerI {
   name: string | undefined;
-  index: number | string | undefined;
+  index: number | string;
 }
 
 export interface roomMsgI {
@@ -29,7 +29,7 @@ export interface add_ships_ReqI {
         y: number;
       };
       direction: boolean;
-      length: number;
+      length: 1 | 2 | 3 | 4 ;
       type: "small" | "medium" | "large" | "huge";
     }
   ];

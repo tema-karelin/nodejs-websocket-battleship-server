@@ -1,9 +1,9 @@
 import { create, readDb } from "./utils/db-functions";
-import { add_ships_ReqI, add_user_to_room_ReqI, create_game_ResI, msgI, playerI, reg_ReqI, reg_ResI, resI, roomMsgI, update_room_ResT, update_winners_ResT } from "./models/types-msg";
+import { add_ships_ReqI, add_user_to_room_ReqI, create_game_ResI, msgI, playerI, reg_ReqI, reg_ResI, resI, roomMsgI, start_game_ResI, update_room_ResT, update_winners_ResT } from "./models/types-msg";
 import { WebSocket } from "ws";
 import { dbI, userT } from "./models/types-users-db";
 import { DB, wss } from "./main";
-import { battleship, playerGameI, roomI, wsClients } from "./models/game-objects";
+import { battleship, playerGameI, roomI, ship, wsClients } from "./models/game-objects";
 import { randomizer } from "./utils/randomizer";
 
 
@@ -26,6 +26,7 @@ export const handler = (data: Buffer | ArrayBuffer | Buffer[], client: WebSocket
       addUserToRoom(msgData, wsId);
       break;
     case "add_ships":
+      addShips(msgData, wsId);
       break;
     case "attack":
       break;
@@ -125,7 +126,6 @@ const createRoom = (client: WebSocket, wsId: string) => {
     roomUsers: [user],
   }
 
-
   battleship.rooms.push(room);
 
   updateRoom(wsId);
@@ -138,13 +138,11 @@ const updateRoom = (wsId: string | undefined = undefined) => {
       roomUsers: el.roomUsers,
     }
   })
-
   const updateRoomMsg: resI = {
     type: "update_room",
     data: JSON.stringify(data),
     id: 0,
   }
-
   if (wsId) {
     sendMsgAll(updateRoomMsg, wsId);
   } else{
@@ -154,9 +152,7 @@ const updateRoom = (wsId: string | undefined = undefined) => {
 
 
 const addUserToRoom = (msg: add_user_to_room_ReqI, wsId: string) => {
-
   const roomId = msg.indexRoom;
-  
   // add to room
   // room index
   const index = battleship.rooms.findIndex((room: roomI) => room.id === roomId);
@@ -179,48 +175,29 @@ const addUserToRoom = (msg: add_user_to_room_ReqI, wsId: string) => {
     wsId: player2WsId,
     name: name2
   }
-
-
   // remove room from available rooms
   battleship.rooms.splice(index, 1);
-
-
   // create game
   createGame(player1, player2);
-
-
-
   //update rooms
   updateRoom();
-
-
-
-}
-
-const addToRoom = (roomId: number) => {
-  
 }
 
 const createGame = (player1: playerGameI, player2: playerGameI) => {
-
   const gameIdRandomizer = (min: number, max:number): number => {
     const rand = randomizer(min, max);
     if (battleship.games[rand]) return gameIdRandomizer(min, max);
     return rand;
   }
-
   const idGame = gameIdRandomizer(0, 100);
-
 
   // create game in battleship object:
   battleship.games[idGame] = {
-    player1,
-    player2,
+    [player1.index]: player1,
+    [player2.index]: player2,
   }
 
-
   // send messages to clients
-
   const data1: create_game_ResI = {
     idGame,
     idPlayer: player1.index,
@@ -243,5 +220,34 @@ const createGame = (player1: playerGameI, player2: playerGameI) => {
   
   sendMsg(msg1, player1.wsId);
   sendMsg(msg2, player2.wsId);
+}
 
+const addShips = (msg: add_ships_ReqI, wsId :string) => {
+  const gameId: number | string = msg.gameId;
+  const playerId: number | string = msg.indexPlayer;
+  const ships: Array<ship> = structuredClone(msg.ships);
+
+  battleship.games[gameId][playerId].ships = ships;
+
+  const player2Id: number | string = Object.keys(battleship.games[gameId]).find((el) => el !== playerId) || "";
+  // start game if 2 players have already added ships
+  if (battleship.games[gameId][player2Id].ships) {
+    startGame(playerId, wsId, ships); //!
+  }
+}
+
+const startGame = (playerId: number | string, wsId: string, ships: Array<ship>) => {
+
+  const data = {
+    ships: ships,
+    currentPlayerIndex: playerId,
+  }
+
+  const startGameMsg: resI = {
+    type: "start_game",
+    data: JSON.stringify(data),
+    id: 0,
+  }
+
+  sendMsg(startGameMsg, wsId);
 }
